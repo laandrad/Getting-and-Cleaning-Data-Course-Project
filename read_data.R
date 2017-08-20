@@ -1,41 +1,37 @@
 library(dplyr)
+setwd("/Users/alejandro/Dropbox (Personal)/Coursera Data Science/Cleaning Data/Course Project")
+source("extract_file.r")
+source("cachedownload.r")
 
-folder = "/Users/alejandro/Dropbox (Personal)/Coursera Data Science/Cleaning Data"
+link = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+temp = tempfile()
+makeCache = makeCacheZipFile(link)
+cacheDownload(makeCache, temp)
+zip_folder = unzip(temp)
 
-folders = list(
-        paste0(folder, "/UCI HAR Dataset/train/"),
-        paste0(folder, "/UCI HAR Dataset/train/Inertial Signals/"),
-        paste0(folder, "/UCI HAR Dataset/test/"),
-        paste0(folder, "/UCI HAR Dataset/test/Inertial Signals/")
-)
-
-file_in_folder = lapply(folders, function(f) {
-        list.files(f, ".txt") %>% paste0(f, .)    
-        }
-) %>% unlist
-
-var_names = strsplit(file_in_folder, "/") %>% unlist %>% .[grep(".txt", .)] %>% 
+var_names = strsplit(zip_folder, "/") %>% unlist %>% .[grep(".txt", .)] %>% 
                 strsplit(., ".txt") %>% unlist %>% tolower 
 
-n.test = read.table(file_in_folder[13]) %>% nrow
-n.train = read.table(file_in_folder[1]) %>% nrow
+n.test = read.table(zip_folder[grep("test/y_test", zip_folder)]) %>% nrow
+n.train = read.table(zip_folder[grep("train/y_train", zip_folder)]) %>% nrow
 test = "test" %>% rep(n.test) %>% data.frame
 train = "train" %>% rep(n.train) %>% data.frame
 
-source(paste0(folder, "/Course Project/help_functions.r"))
-for (f in seq_along(file_in_folder)) {
+for (f in seq_along(zip_folder)) {
         print(paste("reading file:", 
-                    var_names[f], f, "of", length(file_in_folder)))
+                    var_names[f], f, "of", length(zip_folder)))
         
-        if (grepl("test", var_names[f])) {
-                var_name = sub("_test", "", var_names[f])
-                dat = extract_file(file_in_folder[f], var_name)
-                test = data.frame(test, dat)
+        if (grepl("test|train", zip_folder[f])) {
+                if (grepl("test", var_names[f])) {
+                        var_name = sub("_test", "", var_names[f])
+                        dat = extract_file(zip_folder[f], var_name)
+                        test = data.frame(test, dat)
                         
-        } else {
-                var_name = sub("_train", "", var_names[f])
-                dat = extract_file(file_in_folder[f], var_name)
-                train = data.frame(train, dat)
+                } else {
+                        var_name = sub("_train", "", var_names[f])
+                        dat = extract_file(zip_folder[f], var_name)
+                        train = data.frame(train, dat)
+                }  
         }
 }
 
@@ -45,8 +41,9 @@ dim(test)
 dat = bind_rows(train, test)
 dim(dat)
 
-act_labls = read.table(paste0(folder, "/UCI HAR Dataset/activity_labels.txt"))
+act_labls = read.table(zip_folder[grep("act", zip_folder)])
 dat$y = dat$y %>% factor(levels = 1:6, labels = act_labls$V2)
-colnames(dat)[c(1,5)] = c("condition", "activity_label")
+dat = rename(dat, activity_label = y, condition = .)
+names(dat)
 
-write.csv(dat, paste0(folder, "/Course Project/wearables.csv"))
+write.csv(dat, "wearables.csv")
