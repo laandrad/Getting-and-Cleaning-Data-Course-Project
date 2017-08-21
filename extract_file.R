@@ -1,3 +1,6 @@
+## This function extracts a file as is if it contains only a factor.
+## Otherwise, it extracts the mean and sd of each row in the file
+
 extract_file <- function(file, var_name) {
         if (grepl("^subject|^y", var_name)) {
                 dat = read.table(file)
