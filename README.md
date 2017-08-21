@@ -16,7 +16,7 @@ For each record it is provided the means and standard deviations for the followi
 
 ## Data Files
 The dataset includes the following files:
-- 'wearables.csv': This files includes the following variables
+- 'wearables.txt': This files includes the following variables
 
  [1] "subject" (a participant identifier) <br />
  [2] "condition" (whether participant was assigned to the training or the test group) <br />
@@ -38,4 +38,4 @@ The dataset includes the following files:
 [21] "total_acc_y_sd"  <br />
 [22] "total_acc_z_mean" "total_acc_z_sd"  <br />
 
-- 'wearables_summary.csv': This files includes the average of each variable for each activity and each subject.
+- 'wearables_summary.txt': This files includes the average of each variable for each activity and each subject.
