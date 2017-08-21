@@ -61,6 +61,9 @@ The dataset includes the following files:
 
 For more information about this dataset contact: activityrecognition@smartlab.ws
 
+## Running run_analysis.r
+Download "run_analysis.R", "extract_file.R", and "cachedownload.R"). Point your working directory to this folder. Open "run_analysis.R" and run the script. This file contains a link to the Samsung data, will download it and put it in a temporal file. It will extract the mean and standard deviation for each feature and a summary table by subject by activity.
+
 ## License
 Use of this dataset in publications must be acknowledged by referencing the following publication [1] 
 
